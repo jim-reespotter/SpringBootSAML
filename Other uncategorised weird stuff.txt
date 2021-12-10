@@ -1,0 +1,8 @@
+I can't access github on 22TCP, add this to ~/.ssh/config to get around this (talks SSH on 443TCP)
+
+Host github.com
+  Hostname ssh.github.com
+  IdentityFile ~/.ssh/id_rsa
+  Port 443
+  User git
+  
