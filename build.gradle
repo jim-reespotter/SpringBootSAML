@@ -1,11 +1,11 @@
 plugins {
-	id 'org.springframework.boot' version '2.6.1'
+	id 'org.springframework.boot' version '2.6.0'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
 
 group = 'stuff.things'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.3-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -14,6 +14,11 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.security:spring-security-config'
+	implementation 'org.springframework.security:spring-security-saml2-service-provider'
+
+	implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

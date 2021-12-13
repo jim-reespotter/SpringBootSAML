@@ -1,0 +1,20 @@
+spring:
+  security:
+    saml2:
+      relyingparty:
+        registration:
+          MySAMLApp:
+            signing:
+              credentials:
+                - private-key-location: "classpath:credentials/private.key"
+                  certificate-location: "classpath:credentials/public.cer"
+            identityprovider:
+              metadata-uri: https://samltest.id/saml/idp
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.security: TRACE
+    org.springframework.security.saml: TRACE
+    org.opensaml.xmlsec: TRACE
