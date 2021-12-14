@@ -11,14 +11,14 @@ import org.springframework.security.saml2.provider.service.web.DefaultRelyingPar
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
 import org.springframework.security.saml2.provider.service.web.Saml2MetadataFilter;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
-
 @EnableWebSecurity
 public class SAMLSecurityConfig extends WebSecurityConfigurerAdapter {
   
     @Autowired
     RelyingPartyRegistrationRepository relyingPartyRegistrationRepository;
+
+    @Autowired
+    Saml2LoginSettings settings;
     
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -26,14 +26,13 @@ public class SAMLSecurityConfig extends WebSecurityConfigurerAdapter {
         new DefaultRelyingPartyRegistrationResolver(this.relyingPartyRegistrationRepository);
 
         Saml2MetadataFilter filter = new Saml2MetadataFilter(relyingPartyRegistrationResolver, new OpenSamlMetadataResolver());
-        
+
         http
-            .saml2Login(withDefaults())
-                .addFilterBefore(filter, Saml2WebSsoAuthenticationFilter.class)
-                .antMatcher("/**")
+            .saml2Login(settings) // Customizer...
+                .addFilterBefore(filter, Saml2WebSsoAuthenticationFilter.class).antMatcher("/**")  // 
             .authorizeRequests()
-                .anyRequest()
-                .authenticated();
+            .antMatchers("/attributes").hasAuthority("ADMIN")
+            .anyRequest().authenticated();
     }
 }
 
