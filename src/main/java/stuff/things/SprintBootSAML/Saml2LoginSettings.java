@@ -52,24 +52,29 @@ class Saml2LoginSettings implements Customizer <Saml2LoginConfigurer<HttpSecurit
         request.getSession().setAttribute("givenName", princ.getFirstAttribute("urn:oid:0.9.2342.19200300.100.1.1"));
     }
 
-    private Saml2Authentication assignAuthorities (Authentication authentication, HttpServletRequest request) {
+    private Authentication assignAuthorities (Authentication authentication, HttpServletRequest request) {
         Collection<SimpleGrantedAuthority> oldAuthorities = (Collection<SimpleGrantedAuthority>)SecurityContextHolder.getContext()
                 .getAuthentication().getAuthorities();
 
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ADMIN");
-        List<SimpleGrantedAuthority> updatedAuthorities = new ArrayList<SimpleGrantedAuthority>();
-        updatedAuthorities.add(authority);
-        updatedAuthorities.addAll(oldAuthorities);
+        DefaultSaml2AuthenticatedPrincipal princ = (DefaultSaml2AuthenticatedPrincipal) authentication.getPrincipal();
+        if (princ.getAttribute("urn:oid:1.3.6.1.4.1.5923.1.1.1.7").contains("urn:mace:dir:entitlement:common-lib-terms")) {
+            List<SimpleGrantedAuthority> updatedAuthorities = new ArrayList<SimpleGrantedAuthority>();
+            updatedAuthorities.addAll(oldAuthorities);
 
-        Saml2Authentication sAuth = (Saml2Authentication) authentication;
+            updatedAuthorities.add(new SimpleGrantedAuthority("ADMIN"));
 
-        sAuth = new Saml2Authentication(
-                (AuthenticatedPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal(),
-                sAuth.getSaml2Response(),
-                updatedAuthorities
-        );
-        SecurityContextHolder.getContext().setAuthentication(sAuth);
+            Saml2Authentication sAuth = (Saml2Authentication) authentication;
 
-        return sAuth;
+            sAuth = new Saml2Authentication(
+                    (AuthenticatedPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal(),
+                    sAuth.getSaml2Response(),
+                    updatedAuthorities
+            );
+            SecurityContextHolder.getContext().setAuthentication(sAuth);
+
+            return sAuth;
+        }
+        else 
+            return authentication;
     }
 }
